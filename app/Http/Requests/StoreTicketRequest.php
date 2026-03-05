@@ -11,8 +11,7 @@ class StoreTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // Para este teste, não estamos implementando autorização complexa.
-        // Retornamos true para permitir que qualquer requisição use este Form Request.
+        // Neste contexto não aplicamos regras de autorização.
         return true;
     }
 
