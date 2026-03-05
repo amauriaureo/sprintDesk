@@ -17,10 +17,23 @@ class ProjectController extends Controller
      */
     public function index(): JsonResponse
     {
-        // Aqui buscamos todos os projetos usando a paginação padrão do Laravel.
-        // paginate(10)
+        // Recuperamos o valor do parâmetro de busca "q" da query string.
+        // Exemplo de chamada: GET /api/projects?q=site
+        $search = request('q');
+
+        // Começamos construindo a consulta base para Project.
+        $query = Project::query();
+
+        // Se o parâmetro "q" for enviado, aplicamos um filtro pelo nome do projeto.
+        // Usamos LIKE com %texto% para buscar projetos que contenham o termo em qualquer posição.
+        if (!empty($search)) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        // Por fim, aplicamos a paginação.
+        // paginate(10) significa 10 registros por página.
         // A página é controlada pelo parâmetro ?page=1, ?page=2, etc.
-        $projects = Project::paginate(10);
+        $projects = $query->paginate(10);
 
         // Retornamos o resultado em JSON.
         // O objeto de paginação já vem com informações como:
