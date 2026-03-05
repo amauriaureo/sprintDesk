@@ -141,7 +141,28 @@ php artisan migrate
 
 ---
 
-## 7. Iniciar servidor
+## 7. Rodar seeders
+
+Para popular o banco com projetos e tickets de exemplo:
+
+```bash
+php artisan db:seed
+```
+
+Isso executará o `DatabaseSeeder`, que por sua vez chama:
+
+- `ProjectSeeder`
+- `TicketSeeder`
+
+Se quiser recriar o banco do zero com dados de teste:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
+
+## 8. Iniciar servidor
 
 ```bash
 php artisan serve
@@ -165,7 +186,12 @@ http://127.0.0.1:8000
 GET /api/projects
 ```
 
-Possui **paginação automática**.
+Possui **paginação automática** (10 projetos por página) controlada via:
+
+```
+GET /api/projects?page=1
+GET /api/projects?page=2
+```
 
 ---
 
@@ -230,6 +256,12 @@ DELETE /api/projects/{id}
 
 ```
 GET /api/projects/{id}/tickets
+```
+
+Este endpoint também é **paginado** (10 tickets por página), por exemplo:
+
+```
+GET /api/projects/1/tickets?page=1
 ```
 
 ---
@@ -314,6 +346,24 @@ Com uma mensagem explicativa.
 
 ---
 
+# Validações
+
+## Projects
+
+- `name`: obrigatório, string, máximo 255 caracteres
+- `description`: opcional, string
+
+## Tickets
+
+- `title`: obrigatório no cadastro, string, máximo 255 caracteres
+- `description`: opcional, string
+- `status`: opcional, deve ser um dos valores:
+  - `open`
+  - `in_progress`
+  - `done`
+
+---
+
 # Testes da API
 
 A API pode ser testada utilizando ferramentas como:
@@ -324,12 +374,48 @@ A API pode ser testada utilizando ferramentas como:
 
 ---
 
-## Exemplo usando cURL
+## Exemplos usando cURL
+
+### Criar projeto
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/projects \
--H "Content-Type: application/json" \
--d '{"name":"Projeto Teste","description":"Primeiro projeto"}'
+  -H "Content-Type: application/json" \
+  -d '{"name":"Projeto Teste","description":"Primeiro projeto"}'
+```
+
+### Listar projetos (paginação)
+
+```bash
+curl http://127.0.0.1:8000/api/projects?page=2
+```
+
+### Listar projetos filtrando por nome
+
+```bash
+curl "http://127.0.0.1:8000/api/projects?q=teste"
+```
+
+### Criar ticket em um projeto
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/projects/1/tickets \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Corrigir bug","description":"Erro na tela de login","status":"open"}'
+```
+
+### Atualizar apenas o status de um ticket
+
+```bash
+curl -X PATCH http://127.0.0.1:8000/api/tickets/1 \
+  -H "Content-Type: application/json" \
+  -d '{"status":"in_progress"}'
+```
+
+### Tentar deletar projeto com tickets associados (retorna 409)
+
+```bash
+curl -X DELETE http://127.0.0.1:8000/api/projects/1 -i
 ```
 
 ---
