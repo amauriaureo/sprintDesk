@@ -11,7 +11,9 @@ class StoreTicketRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Para este teste, não estamos implementando autorização complexa.
+        // Retornamos true para permitir que qualquer requisição use este Form Request.
+        return true;
     }
 
     /**
@@ -22,7 +24,9 @@ class StoreTicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'status' => ['nullable', 'string', 'in:open,in_progress,done'],
         ];
     }
 }
