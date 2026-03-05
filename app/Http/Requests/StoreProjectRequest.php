@@ -11,7 +11,9 @@ class StoreProjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // Para este teste, não estamos implementando autorização complexa.
+        // Retornamos true para permitir que qualquer requisição use este Form Request.
+        return true;
     }
 
     /**
@@ -22,7 +24,8 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
         ];
     }
 }
